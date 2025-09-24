@@ -1,0 +1,247 @@
+# Python 相关文件
+# ================
+
+# 字节码文件
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C扩展
+*.so
+
+# 分发/打包
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# PyInstaller
+#  通常这些文件是由python脚本从模板自动生成的
+#  before PyInstaller builds the exe, so as to inject date/other infos into it.
+*.manifest
+*.spec
+
+# 单元测试 / 覆盖率报告
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# IPython
+profile_default/
+ipython_config.py
+
+# pipenv
+#   根据官方推荐，Pipfile.lock 应该被加入版本控制
+#   但是，对于库项目，可能需要忽略 Pipfile.lock
+# Pipfile.lock
+
+# pyenv
+.python-version
+
+# pipfile
+.pipfile
+
+# celery beat 调度文件
+celerybeat-schedule
+
+# SageMath 解析文件
+*.sage.py
+
+# 环境变量
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Spyder IDE
+.spyderproject
+.spyproject
+
+# Rope 项目设置
+.ropeproject
+
+# mkdocs 文档
+/site
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Pyre 类型检查器
+.pyre/
+
+# pytype 静态类型分析器
+.pytype/
+
+# Cython 调试符号
+cython_debug/
+
+# PyCharm IDE
+.idea/
+
+# VS Code IDE
+.vscode/
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# Godot 相关文件
+# ================
+
+# 导入文件
+*.import
+
+# Godot 自动生成的脚本元数据
+*.gd.remap
+*.cs.remap
+
+# Godot 项目文件 (对于子仓库通常不需要忽略)
+# project.godot
+
+# 导出模板
+export_presets.cfg
+
+# 导出文件
+exports/
+
+# Godot 单元测试
+addons/gut/
+.gut_editor_config.json
+
+# Excel转换器特定文件
+# ======================
+
+# 临时和缓存文件
+*.tmp
+*.temp
+*.cache
+
+# 日志文件
+*.log
+logs/
+
+# 测试数据 (可选择忽略)
+# src/excel_files/*.xlsx
+# src/excel_files/*.xls
+
+# 生成的JSON文件 (可选择忽略)
+# data/generated/*.json
+
+# Excel临时文件
+~$*.xlsx
+~$*.xls
+.~lock.*#
+
+# 配置文件的备份
+*.ini.bak
+*.cfg.bak
+
+# 系统文件
+# =========
+
+# Windows 系统文件
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# macOS 系统文件
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+Icon?
+
+# Linux 系统文件
+*~
+.nfs*
+
+# 编辑器文件
+# ===========
+
+# Vim/NeoVim
+*.swp
+*.swo
+*~
+.netrwhist
+
+# Emacs
+*~
+\#*\#
+/.emacs.desktop
+/.emacs.desktop.lock
+*.elc
+auto-save-list
+tramp
+.\#*
+
+# Sublime Text
+*.sublime-workspace
+*.sublime-project
+
+# Atom
+.atom/
+
+# 其他工具
+# ========
+
+# 节点模块 (如果使用任何JS工具)
+node_modules/
+
+# Yarn 包管理器
+.yarn/
+.yarn.lock
+
+# 本地数据库
+*.db
+*.sqlite
+*.sqlite3
+
+# 密钥文件
+*.key
+*.pem
+secrets.json
+
+# 项目特定忽略
+# =============
+
+# 如果有敏感的配置文件，可以在这里添加
+# config_local.ini
+# secrets.py

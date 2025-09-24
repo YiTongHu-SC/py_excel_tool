@@ -1,0 +1,124 @@
+[gd_scene load_steps=2 format=3 uid="uid://bt2gxcpgmhp3w"]
+
+[ext_resource type="Script" path="res://addons/py_excel_tool/settings_dialog.gd" id="1_0h8mf"]
+
+[node name="SettingsDialog" type="AcceptDialog"]
+title = "Excel转换器设置"
+initial_position = 2
+size = Vector2i(500, 350)
+script = ExtResource("1_0h8mf")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 8.0
+offset_top = 8.0
+offset_right = -8.0
+offset_bottom = -49.0
+
+[node name="TitleLabel" type="Label" parent="VBoxContainer"]
+layout_mode = 2
+text = "Excel转换器配置"
+horizontal_alignment = 1
+
+[node name="HSeparator" type="HSeparator" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="SettingsContainer" type="VBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="PythonGroup" type="VBoxContainer" parent="VBoxContainer/SettingsContainer"]
+layout_mode = 2
+
+[node name="PythonLabel" type="Label" parent="VBoxContainer/SettingsContainer/PythonGroup"]
+layout_mode = 2
+text = "Python可执行文件路径:"
+
+[node name="PythonHBox" type="HBoxContainer" parent="VBoxContainer/SettingsContainer/PythonGroup"]
+layout_mode = 2
+
+[node name="PythonPathEdit" type="LineEdit" parent="VBoxContainer/SettingsContainer/PythonGroup/PythonHBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+placeholder_text = "python (留空自动检测)"
+
+[node name="BrowseButton" type="Button" parent="VBoxContainer/SettingsContainer/PythonGroup/PythonHBox"]
+layout_mode = 2
+text = "浏览..."
+
+[node name="TestButton" type="Button" parent="VBoxContainer/SettingsContainer/PythonGroup/PythonHBox"]
+layout_mode = 2
+text = "测试"
+
+[node name="HSeparator2" type="HSeparator" parent="VBoxContainer/SettingsContainer"]
+layout_mode = 2
+
+[node name="PathsGroup" type="VBoxContainer" parent="VBoxContainer/SettingsContainer"]
+layout_mode = 2
+
+[node name="InputGroup" type="VBoxContainer" parent="VBoxContainer/SettingsContainer/PathsGroup"]
+layout_mode = 2
+
+[node name="InputLabel" type="Label" parent="VBoxContainer/SettingsContainer/PathsGroup/InputGroup"]
+layout_mode = 2
+text = "默认Excel文件输入目录:"
+
+[node name="InputHBox" type="HBoxContainer" parent="VBoxContainer/SettingsContainer/PathsGroup/InputGroup"]
+layout_mode = 2
+
+[node name="InputPathEdit" type="LineEdit" parent="VBoxContainer/SettingsContainer/PathsGroup/InputGroup/InputHBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+placeholder_text = "res://addons/py_excel_tool/data/"
+
+[node name="InputBrowseButton" type="Button" parent="VBoxContainer/SettingsContainer/PathsGroup/InputGroup/InputHBox"]
+layout_mode = 2
+text = "浏览..."
+
+[node name="OutputGroup" type="VBoxContainer" parent="VBoxContainer/SettingsContainer/PathsGroup"]
+layout_mode = 2
+
+[node name="OutputLabel" type="Label" parent="VBoxContainer/SettingsContainer/PathsGroup/OutputGroup"]
+layout_mode = 2
+text = "默认JSON文件输出目录:"
+
+[node name="OutputHBox" type="HBoxContainer" parent="VBoxContainer/SettingsContainer/PathsGroup/OutputGroup"]
+layout_mode = 2
+
+[node name="OutputPathEdit" type="LineEdit" parent="VBoxContainer/SettingsContainer/PathsGroup/OutputGroup/OutputHBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+placeholder_text = "res://data/generated/"
+
+[node name="OutputBrowseButton" type="Button" parent="VBoxContainer/SettingsContainer/PathsGroup/OutputGroup/OutputHBox"]
+layout_mode = 2
+text = "浏览..."
+
+[node name="HSeparator3" type="HSeparator" parent="VBoxContainer/SettingsContainer"]
+layout_mode = 2
+
+[node name="OptionsGroup" type="VBoxContainer" parent="VBoxContainer/SettingsContainer"]
+layout_mode = 2
+
+[node name="AutoConvertCheck" type="CheckBox" parent="VBoxContainer/SettingsContainer/OptionsGroup"]
+layout_mode = 2
+text = "文件改变时自动转换"
+
+[node name="ShowNotificationCheck" type="CheckBox" parent="VBoxContainer/SettingsContainer/OptionsGroup"]
+layout_mode = 2
+button_pressed = true
+text = "显示转换完成通知"
+
+[node name="VerboseLoggingCheck" type="CheckBox" parent="VBoxContainer/SettingsContainer/OptionsGroup"]
+layout_mode = 2
+text = "详细日志输出"
+
+[node name="HSeparator4" type="HSeparator" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="StatusLabel" type="Label" parent="VBoxContainer"]
+layout_mode = 2
+text = "就绪"
+horizontal_alignment = 1

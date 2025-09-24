@@ -1,0 +1,34 @@
+[gd_scene load_steps=2 format=3 uid="uid://b8p8dbnk6h1yb"]
+
+[ext_resource type="Script" path="res://addons/py_excel_tool/excel_toolbar.gd" id="1_vhytu"]
+
+[node name="ExcelToolbar" type="HBoxContainer"]
+script = ExtResource("1_vhytu")
+
+[node name="ConvertButton" type="Button"]
+layout_mode = 2
+text = "转换Excel"
+icon = null
+
+[node name="VSeparator" type="VSeparator"]
+layout_mode = 2
+
+[node name="QuickConvertButton" type="Button"]
+layout_mode = 2
+text = "快速转换"
+
+[node name="VSeparator2" type="VSeparator"]
+layout_mode = 2
+
+[node name="SettingsButton" type="Button"]
+layout_mode = 2
+text = "设置"
+
+[node name="VSeparator3" type="VSeparator"]
+layout_mode = 2
+
+[node name="StatusLabel" type="Label"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "就绪"
+horizontal_alignment = 1
