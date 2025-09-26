@@ -2,6 +2,8 @@
 
 本工具集用于将Excel文件批量转换为JSON格式，专为Godot项目数据预处理设计。包含Python脚本和Godot 4编辑器插件，提供完整的数据处理工作流。
 
+**🆕 v1.1.0 新增GDScript自动生成功能！**
+
 ---
 
 ## 🚀 功能特性
@@ -21,7 +23,16 @@
 - ✅ 设置对话框，配置Python路径和目录
 - ✅ 实时状态显示和日志输出
 - ✅ 自动路径管理和项目设置持久化
-- 自动生成gd脚本
+- 🆕 **自动生成GDScript脚本**
+
+### 🆕 GDScript生成功能 (v1.1.0)
+
+- ✅ **自动生成数据类**: 根据Excel结构生成对应的GDScript数据类
+- ✅ **自动生成加载器**: 生成数据加载器类，提供便捷的数据访问API
+- ✅ **智能类型推断**: 自动推断字段类型（int, float, String, bool等）
+- ✅ **命名规范转换**: 自动转换为GDScript命名规范
+- ✅ **可配置路径**: 支持自定义生成路径和资源引用
+- ✅ **项目设置集成**: 完整的配置选项管理
 
 ## 📁 项目结构
 
@@ -72,9 +83,16 @@ pipenv install
 
 ### 4. 转换Excel文件
 
+#### 基础转换（JSON）
 1. 将Excel文件放入 `addons/py_excel_tool/data/` 目录
 2. 使用工具菜单 → **"转换Excel文件为JSON"**
 3. 或使用停靠面板进行可视化操作
+
+#### 🆕 转换并生成GDScript
+1. 将Excel文件放入输入目录
+2. 使用工具菜单 → **"转换Excel并生成GDScript"**
+3. 或在停靠面板勾选"同时生成GDScript脚本"
+4. 插件将自动生成数据类和加载器类
 
 ## 🎯 使用方式
 
@@ -129,7 +147,97 @@ pipenv run python excel_to_json.py --input ../data/ --output ../../data/generate
 }
 ```
 
-## 💻 Godot中使用JSON数据
+## 🆕 生成的GDScript文件示例
+
+### 生成的文件结构
+
+```text
+scripts/generated/
+├── data/           # 数据类文件
+│   └── equipment_data.gd
+└── loader/         # 加载器文件
+    └── equipment_loader.gd
+```
+
+### 数据类示例 (equipment_data.gd)
+
+```gdscript
+## equipment数据类，由Excel工具自动生成
+class_name EquipmentData
+
+var id: int = 0
+var name: String = ""
+var type: String = ""
+var attack: int = 0
+var defense: int = 0
+var price: float = 0.0
+
+## 构造函数
+func _init(data: Dictionary = {}):
+    if data.is_empty():
+        return
+    
+    if data.has("ID"):
+        id = data["ID"]
+    if data.has("Name"):
+        name = data["Name"]
+    # ... 其他字段赋值
+```
+
+### 加载器类示例 (equipment_loader.gd)
+
+```gdscript
+## equipment数据加载器，由Excel工具自动生成
+class_name EquipmentLoader
+
+const EquipmentData = preload("res://scripts/data/equipment_data.gd")
+
+var data_dict: Dictionary[int, EquipmentData] = {}
+var data_array: Array[EquipmentData] = []
+
+## 加载数据
+func load_data(json_path: String):
+    # 自动加载和解析JSON数据
+    # ...
+
+## 根据ID获取数据
+func get_by_id(id: int) -> EquipmentData:
+    return data_dict.get(id, null)
+
+## 获取所有数据
+func get_all() -> Array[EquipmentData]:
+    return data_array
+```
+
+## 💻 Godot中使用数据
+
+### 🆕 使用生成的GDScript类
+
+```gdscript
+extends Node
+
+func _ready():
+    # 使用生成的数据加载器
+    var equipment_loader = EquipmentLoader.new()
+    equipment_loader.load_data("res://data/generated/equipment.json")
+    
+    # 获取特定装备
+    var sword = equipment_loader.get_by_id(1001)
+    if sword:
+        print("装备名称: ", sword.name)
+        print("攻击力: ", sword.attack)
+        print("价格: ", sword.price)
+    
+    # 获取所有装备
+    var all_equipment = equipment_loader.get_all()
+    for equip in all_equipment:
+        print("装备: ", equip.name, " 类型: ", equip.type)
+    
+    # 统计信息
+    print("总装备数量: ", equipment_loader.get_count())
+```
+
+### 传统方式：使用JsonDataLoader工具类
 
 ```gdscript
 # 使用JsonDataLoader工具类
@@ -184,6 +292,9 @@ skip_blank_lines = true
 - `excel_converter/auto_convert` - 自动转换开关
 - `excel_converter/show_notifications` - 显示通知
 - `excel_converter/verbose_logging` - 详细日志
+- 🆕 `excel_converter/enable_gdscript_generation` - 启用GDScript生成
+- 🆕 `excel_converter/gdscript_output_path` - GDScript输出目录
+- 🆕 `excel_converter/base_resource_path` - 基础资源路径
 
 ## 🛠 故障排除
 
@@ -207,6 +318,15 @@ skip_blank_lines = true
 
 ## 🔄 工作流建议
 
+### 🆕 使用GDScript生成功能的工作流
+
+1. **数据设计**: 在Excel中设计数据表结构，第一行作为字段名
+2. **一键生成**: 使用"转换Excel并生成GDScript"功能
+3. **代码集成**: 直接使用生成的类，享受强类型和IDE支持
+4. **数据更新**: Excel数据更改后重新运行转换，保持代码同步
+
+### 传统工作流
+
 1. **开发阶段**: 使用停靠面板进行交互式转换
 2. **批量处理**: 使用命令行脚本进行自动化
 3. **版本控制**: 将生成的JSON文件加入Git（或忽略）
@@ -214,6 +334,14 @@ skip_blank_lines = true
 5. **代码集成**: 使用JsonDataLoader类加载和使用数据
 
 ## 📝 更新日志
+
+- **v1.1.0** - 🆕 GDScript生成功能
+  - 新增自动生成GDScript数据类功能
+  - 新增自动生成数据加载器功能
+  - 集成项目设置配置选项
+  - 更新UI界面，添加GDScript相关控件
+  - 智能类型推断和命名规范转换
+  - 改进错误处理和日志输出
 
 - **v1.0.0** - 初始版本
   - Python脚本转换功能

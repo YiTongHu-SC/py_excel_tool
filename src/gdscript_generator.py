@@ -174,7 +174,8 @@ class GDScriptGenerator:
         
         script_lines = [
             f"## {sheet_name}数据类，由Excel工具自动生成",
-            f"class_name {class_name}",
+            f"## 使用: var data = {class_name}.new(json_record)",
+            f"class {class_name}:",
             ""
         ]
         
@@ -182,22 +183,22 @@ class GDScriptGenerator:
         for field_name, field_type in field_types.items():
             gd_field_name = self.convert_to_gdscript_name(field_name)
             default_value = self.get_default_value(field_type)
-            script_lines.append(f"var {gd_field_name}: {field_type} = {default_value}")
+            script_lines.append(f"\tvar {gd_field_name}: {field_type} = {default_value}")
         
         script_lines.extend([
             "",
-            f"## 构造函数",
-            f"func _init(data: Dictionary = {{}}):",
-            f"\tif data.is_empty():",
-            f"\t\treturn",
+            f"\t## 构造函数",
+            f"\tfunc _init(data: Dictionary = {{}}):",
+            f"\t\tif data.is_empty():",
+            f"\t\t\treturn",
             ""
         ])
         
         # 生成字段赋值代码
         for field_name, field_type in field_types.items():
             gd_field_name = self.convert_to_gdscript_name(field_name)
-            script_lines.append(f'\tif data.has("{field_name}"):')
-            script_lines.append(f'\t\t{gd_field_name} = data["{field_name}"]')
+            script_lines.append(f'\t\tif data.has("{field_name}"):')
+            script_lines.append(f'\t\t\t{gd_field_name} = data["{field_name}"]')
         
         return "\n".join(script_lines)
     
@@ -220,9 +221,9 @@ class GDScriptGenerator:
         if output_dir:
             resource_path = self.generate_data_resource_path(sheet_name, output_dir)
         else:
-            # 回退到默认相对路径
+            # 回退到默认绝对路径
             data_filename = self.get_data_class_filename(sheet_name)
-            resource_path = f"res://../data/{data_filename}"
+            resource_path = f"res://scripts/generated/data/{data_filename}"
         
         # 查找ID字段
         id_field = self.find_id_field(field_types)
@@ -232,12 +233,12 @@ class GDScriptGenerator:
             f"## {sheet_name}数据加载器，由Excel工具自动生成",
             f"class_name {loader_class_name}",
             "",
-            f"## 引入数据类",
-            f'const {data_class_name} = preload("{resource_path}")',
+            f"## 引入数据类脚本",
+            f'const DataScript = preload("{resource_path}")',
             "",
-            f"## 数据字典",
-            f"var data_dict: Dictionary[{id_type}, {data_class_name}] = {{}}",
-            f"var data_array: Array[{data_class_name}] = []",
+            f"## 数据字典和数组 (使用Variant类型避免循环依赖)",
+            f"var data_dict: Dictionary[{id_type}, Variant] = {{}}",
+            f"var data_array: Array[Variant] = []",
             "",
             f"## 加载数据",
             f"func load_data(json_path: String):",
@@ -260,9 +261,9 @@ class GDScriptGenerator:
             f'\t\tprint("JSON中没有找到{sheet_name}数据")',
             f"\t\treturn",
             f"\t",
-            f'\tvar records = json_data["{sheet_name}"]',
+            f"\tvar records = json_data[\"{sheet_name}\"]",
             f"\tfor record in records:",
-            f"\t\tvar data_item = {data_class_name}.new(record)",
+            f"\t\tvar data_item = DataScript.{data_class_name}.new(record)",
             f"\t\tdata_array.append(data_item)",
         ]
         
@@ -275,16 +276,20 @@ class GDScriptGenerator:
         script_lines.extend([
             "",
             f"## 根据ID获取数据",
-            f"func get_by_id(id: {id_type}) -> {data_class_name}:",
+            f"func get_by_id(id: {id_type}) -> Variant:",
             f"\treturn data_dict.get(id, null)",
             "",
             f"## 获取所有数据",
-            f"func get_all() -> Array[{data_class_name}]:",
+            f"func get_all() -> Array[Variant]:",
             f"\treturn data_array",
             "",
             f"## 获取数据数量",
             f"func get_count() -> int:",
-            f"\treturn data_array.size()"
+            f"\treturn data_array.size()",
+            "",
+            f"## 创建新的数据项实例",
+            f"func create_data_item(data: Dictionary) -> Variant:",
+            f"\treturn DataScript.{data_class_name}.new(data)"
         ])
         
         return "\n".join(script_lines)
@@ -421,16 +426,46 @@ class GDScriptGenerator:
         data_class_dir = self.config.get('GDSCRIPT', 'data_class_dir', fallback='data')
         data_filename = self.get_data_class_filename(sheet_name)
         
+        # 优先使用配置的基础路径
         if base_path:
-            # 使用配置的基础路径
+            # 使用配置的基础路径，忽略output_dir
             if not base_path.endswith('/'):
                 base_path += '/'
             return f"{base_path}{data_class_dir}/{data_filename}"
+        
+        # 如果没有配置base_resource_path，则根据output_dir生成路径
+        if output_dir:
+            # 将输出目录转换为res://路径
+            output_dir_str = str(output_dir).replace('\\', '/')
+            
+            # 如果输出目录已经是res://路径，直接使用
+            if output_dir_str.startswith('res://'):
+                return f"{output_dir_str}/{data_class_dir}/{data_filename}"
+            
+            # 如果是绝对Windows路径，尝试提取相对于项目的部分
+            if ':' in output_dir_str:  # 判断是否为绝对路径（包含驱动器字母）
+                # 尝试找到项目根目录的相对路径
+                # 假设输出路径类似 "d:/godot-project/meme-dungeon-godot/scripts/xxx"
+                # 我们需要提取 "scripts/xxx" 部分
+                parts = output_dir_str.split('/')
+                if 'meme-dungeon-godot' in parts:
+                    # 找到项目名后的路径
+                    project_index = parts.index('meme-dungeon-godot')
+                    relative_parts = parts[project_index + 1:]
+                    relative_path = '/'.join(relative_parts)
+                    return f"res://{relative_path}/{data_class_dir}/{data_filename}"
+            
+            # 如果是相对路径，转换为res://路径
+            if output_dir_str.startswith('./'):
+                output_dir_str = output_dir_str[2:]
+            elif not output_dir_str.startswith('/'):
+                # 相对路径，直接使用
+                pass
+            
+            return f"res://{output_dir_str}/{data_class_dir}/{data_filename}"
         else:
-            # 使用相对路径，从loader目录引用data目录
-            # 假设结构是：output_dir/loader/ 和 output_dir/data/
-            # 从loader目录看data目录就是 ../data/
-            return f"res://../{data_class_dir}/{data_filename}"
+            # 回退到默认路径
+            return f"res://scripts/generated/{data_class_dir}/{data_filename}"
     
     def generate_scripts_from_json(self, json_file: Path, output_dir: Optional[Path] = None) -> None:
         """

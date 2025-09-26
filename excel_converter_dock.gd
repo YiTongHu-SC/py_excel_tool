@@ -12,6 +12,7 @@ var convert_button: Button
 var log_output: TextEdit
 var progress_bar: ProgressBar
 var status_label: Label
+var enable_gdscript_check: CheckBox
 
 # 设置相关
 var settings_dialog: AcceptDialog
@@ -114,6 +115,14 @@ func _setup_ui():
 	output_browse_btn.pressed.connect(_on_browse_output_path)
 	output_hbox.add_child(output_browse_btn)
 	
+	# GDScript生成选项
+	path_group.add_child(HSeparator.new())
+	
+	enable_gdscript_check = CheckBox.new()
+	enable_gdscript_check.text = "同时生成GDScript脚本"
+	enable_gdscript_check.tooltip_text = "将Excel数据转换为JSON的同时，自动生成对应的GDScript数据类和加载器"
+	path_group.add_child(enable_gdscript_check)
+	
 	# 操作按钮区域
 	main_vbox.add_child(HSeparator.new())
 	
@@ -166,12 +175,14 @@ func _load_settings():
 	python_path_edit.text = ProjectSettings.get_setting("excel_converter/python_path", "")
 	input_path_edit.text = ProjectSettings.get_setting("excel_converter/input_path", "")
 	output_path_edit.text = ProjectSettings.get_setting("excel_converter/output_path", "")
+	enable_gdscript_check.button_pressed = ProjectSettings.get_setting("excel_converter/enable_gdscript_generation", false)
 
 func _save_settings():
 	"""保存设置"""
 	ProjectSettings.set_setting("excel_converter/python_path", python_path_edit.text)
 	ProjectSettings.set_setting("excel_converter/input_path", input_path_edit.text)
 	ProjectSettings.set_setting("excel_converter/output_path", output_path_edit.text)
+	ProjectSettings.set_setting("excel_converter/enable_gdscript_generation", enable_gdscript_check.button_pressed)
 	ProjectSettings.save()
 
 func _on_convert_pressed():
@@ -196,7 +207,8 @@ func _convert_thread(paths: Array):
 	var input_path = paths[0]
 	var output_path = paths[1]
 	
-	var success = converter.execute_conversion(input_path, output_path)
+	var generate_gdscript = enable_gdscript_check.button_pressed
+	var success = converter.execute_conversion(input_path, output_path, generate_gdscript)
 	
 	# 回到主线程更新UI
 	call_deferred("_on_conversion_finished", success)
