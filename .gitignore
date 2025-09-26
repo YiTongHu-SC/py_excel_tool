@@ -13,6 +13,9 @@ __pycache__/
 ~$*.xls*
 ~$*.xlsx
 
+# 本地测试数据
+test_output/
+
 # 分发/打包
 .Python
 build/

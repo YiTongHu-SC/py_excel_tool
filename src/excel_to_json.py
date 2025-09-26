@@ -13,7 +13,8 @@ import pandas as pd
 from pathlib import Path
 import argparse
 import logging
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Optional
+from gdscript_generator import GDScriptGenerator
 
 # 配置日志
 logging.basicConfig(
@@ -26,22 +27,30 @@ logger = logging.getLogger(__name__)
 class ExcelToJsonConverter:
     """Excel到JSON转换器类"""
     
-    def __init__(self, input_dir: str, output_dir: str):
+    def __init__(self, input_dir: str, output_dir: str, generate_gdscript: bool = False, gdscript_output_dir: Optional[str] = None):
         """
         初始化转换器
         
         Args:
             input_dir (str): 输入Excel文件目录
             output_dir (str): 输出JSON文件目录
+            generate_gdscript (bool): 是否生成GDScript脚本
+            gdscript_output_dir (str): GDScript输出目录
         """
         self.input_dir = Path(input_dir)
         self.output_dir = Path(output_dir)
+        self.generate_gdscript = generate_gdscript
+        self.gdscript_output_dir = Path(gdscript_output_dir) if gdscript_output_dir else None
         
         # 确保输出目录存在
         self.output_dir.mkdir(parents=True, exist_ok=True)
         
         # 支持的Excel文件格式
         self.supported_extensions = {'.xlsx', '.xls'}
+        
+        # 初始化GDScript生成器
+        if self.generate_gdscript:
+            self.gdscript_generator = GDScriptGenerator()
     
     def get_excel_files(self) -> List[Path]:
         """
@@ -128,6 +137,18 @@ class ExcelToJsonConverter:
             # 保存JSON文件
             self.save_json(json_data, output_file)
             
+            # 生成GDScript脚本（如果启用）
+            if self.generate_gdscript:
+                logger.info(f"开始生成GDScript脚本: {excel_file.stem}")
+                try:
+                    self.gdscript_generator.generate_scripts_from_json(
+                        output_file, 
+                        self.gdscript_output_dir
+                    )
+                    logger.info(f"GDScript脚本生成完成: {excel_file.stem}")
+                except Exception as e:
+                    logger.error(f"生成GDScript脚本失败 {excel_file.stem}: {str(e)}")
+            
             logger.info(f"文件转换完成: {excel_file} -> {output_file}")
             
         except Exception as e:
@@ -168,11 +189,22 @@ def main():
                        help='输出JSON文件目录 (默认: ./json_files)')
     parser.add_argument('--file', '-f',
                        help='转换单个文件（指定文件路径）')
+    parser.add_argument('--generate-gdscript', '-g',
+                       action='store_true',
+                       help='生成GDScript脚本')
+    parser.add_argument('--gdscript-output', '-go',
+                       default='./gdscript_output',
+                       help='GDScript输出目录 (默认: ./gdscript_output)')
     
     args = parser.parse_args()
     
     # 创建转换器实例
-    converter = ExcelToJsonConverter(args.input, args.output)
+    converter = ExcelToJsonConverter(
+        args.input, 
+        args.output, 
+        args.generate_gdscript,
+        args.gdscript_output if args.generate_gdscript else None
+    )
     
     if args.file:
         # 转换单个文件
