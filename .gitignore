@@ -9,6 +9,10 @@ __pycache__/
 # C扩展
 *.so
 
+# Excel
+~$*.xls*
+~$*.xlsx
+
 # 分发/打包
 .Python
 build/
