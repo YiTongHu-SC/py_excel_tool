@@ -175,8 +175,8 @@ func _on_convert_pressed():
 	
 	_add_log("开始Excel转换...")
 	
-	var input_path = input_path_edit.text
-	var output_path = output_path_edit.text
+	var input_path = converter.get_input_path()
+	var output_path = converter.get_output_path()
 	
 	# 在线程中执行转换
 	var thread = Thread.new()
@@ -229,9 +229,9 @@ func _on_python_path_selected(path: String):
 func _on_browse_input_path():
 	"""浏览输入路径"""
 	var file_dialog = EditorFileDialog.new()
-	file_dialog.current_dir = ProjectSettings.globalize_path("res://")
 	file_dialog.file_mode = EditorFileDialog.FILE_MODE_OPEN_DIR
-	file_dialog.access = EditorFileDialog.ACCESS_FILESYSTEM
+	file_dialog.access = EditorFileDialog.ACCESS_RESOURCES
+	file_dialog.current_dir = "res://"
 	file_dialog.dir_selected.connect(_on_input_path_selected)
 	
 	add_child(file_dialog)
@@ -239,14 +239,15 @@ func _on_browse_input_path():
 
 func _on_input_path_selected(path: String):
 	"""输入路径选择完成"""
+	print("Selected input path: ", path)
 	input_path_edit.text = path
 
 func _on_browse_output_path():
 	"""浏览输出路径"""
 	var file_dialog = EditorFileDialog.new()
-	file_dialog.current_dir = ProjectSettings.globalize_path("res://")
+	file_dialog.current_dir = "res://"
 	file_dialog.file_mode = EditorFileDialog.FILE_MODE_OPEN_DIR
-	file_dialog.access = EditorFileDialog.ACCESS_FILESYSTEM
+	file_dialog.access = EditorFileDialog.ACCESS_RESOURCES
 	file_dialog.dir_selected.connect(_on_output_path_selected)
 	
 	add_child(file_dialog)

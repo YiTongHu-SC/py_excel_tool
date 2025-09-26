@@ -431,7 +431,7 @@ class GDScriptGenerator:
             # 使用配置的基础路径，忽略output_dir
             if not base_path.endswith('/'):
                 base_path += '/'
-            return f"{base_path}{data_class_dir}/{data_filename}"
+            return f"{base_path}/generated/{data_class_dir}/{data_filename}"
         
         # 如果没有配置base_resource_path，则根据output_dir生成路径
         if output_dir:
@@ -444,15 +444,27 @@ class GDScriptGenerator:
             
             # 如果是绝对Windows路径，尝试提取相对于项目的部分
             if ':' in output_dir_str:  # 判断是否为绝对路径（包含驱动器字母）
-                # 尝试找到项目根目录的相对路径
-                # 假设输出路径类似 "d:/godot-project/meme-dungeon-godot/scripts/xxx"
-                # 我们需要提取 "scripts/xxx" 部分
+                # 更通用的方法：查找包含'scripts'或'generated'关键词的路径部分
                 parts = output_dir_str.split('/')
-                if 'meme-dungeon-godot' in parts:
-                    # 找到项目名后的路径
-                    project_index = parts.index('meme-dungeon-godot')
-                    relative_parts = parts[project_index + 1:]
+                
+                # 尝试找到scripts目录作为基准点
+                scripts_index = -1
+                for i, part in enumerate(parts):
+                    if part == 'scripts':
+                        scripts_index = i
+                        break
+                
+                if scripts_index >= 0:
+                    # 从scripts开始构建相对路径
+                    relative_parts = parts[scripts_index:]
                     relative_path = '/'.join(relative_parts)
+                    return f"res://{relative_path}/{data_class_dir}/{data_filename}"
+                
+                # 如果没有找到scripts，尝试从最后两个部分构建路径（通常是项目结构的一部分）
+                if len(parts) >= 2:
+                    # 取最后两个部分，通常是像 "scripts/generated" 这样的结构
+                    last_parts = parts[-2:]
+                    relative_path = '/'.join(last_parts)
                     return f"res://{relative_path}/{data_class_dir}/{data_filename}"
             
             # 如果是相对路径，转换为res://路径

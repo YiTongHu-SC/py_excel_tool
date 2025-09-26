@@ -154,6 +154,7 @@ func _on_browse_input():
 
 func _on_input_dir_selected(path: String):
 	"""输入目录选择完成"""
+	print("Selected input path: ", path)
 	input_path_edit.text = path
 	# 移除临时添加的文件对话框
 	for child in get_children():
