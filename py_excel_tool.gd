@@ -14,7 +14,7 @@ func _enter_tree():
 	add_tool_menu_item("转换Excel文件为JSON", _on_convert_excel)
 	add_tool_menu_item("转换Excel并生成GDScript", _on_convert_excel_with_gdscript)
 	add_tool_menu_item("Excel转换器设置", _on_open_settings)
-	add_tool_menu_item("打开Excel转换器面板", _on_open_dock)
+	# add_tool_menu_item("打开Excel转换器面板", _on_open_dock)
 	
 	# 创建停靠面板
 	dock_instance = preload("res://addons/py_excel_tool/excel_converter_dock.gd").new()
@@ -55,11 +55,6 @@ func _on_open_settings():
 	var settings_dialog = preload("res://addons/py_excel_tool/settings_dialog_new.tscn").instantiate()
 	EditorInterface.get_base_control().add_child(settings_dialog)
 	settings_dialog.popup_centered(Vector2i(550, 500))
-
-func _on_open_dock():
-	"""聚焦到停靠面板"""
-	if dock_instance:
-		dock_instance.grab_focus()
 
 func _setup_project_settings():
 	"""初始化项目设置"""

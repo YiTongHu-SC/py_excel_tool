@@ -11,6 +11,7 @@ func _init():
 func execute_conversion(input_path: String = "", output_path: String = "", generate_gdscript: bool = false):
 	"""执行Excel转换"""
 	logger.log_info("开始Excel转换...")
+	logger.log_info("当前python路径: %s" % get_python_path())
 	
 	# 获取设置
 	var python_path = get_python_path()

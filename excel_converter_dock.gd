@@ -9,7 +9,6 @@ var input_path_edit: LineEdit
 var output_path_edit: LineEdit
 var python_path_edit: LineEdit
 var convert_button: Button
-var log_output: TextEdit
 var progress_bar: ProgressBar
 var status_label: Label
 var enable_gdscript_check: CheckBox
@@ -150,25 +149,6 @@ func _setup_ui():
 	status_label.text = "就绪"
 	status_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	main_vbox.add_child(status_label)
-	
-	# 日志输出区域
-	main_vbox.add_child(HSeparator.new())
-	
-	var log_label = Label.new()
-	log_label.text = "转换日志:"
-	main_vbox.add_child(log_label)
-	
-	log_output = TextEdit.new()
-	log_output.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	log_output.editable = false
-	log_output.placeholder_text = "转换日志将在此处显示..."
-	main_vbox.add_child(log_output)
-	
-	# 清除日志按钮
-	var clear_log_btn = Button.new()
-	clear_log_btn.text = "清除日志"
-	clear_log_btn.pressed.connect(_on_clear_log)
-	main_vbox.add_child(clear_log_btn)
 
 func _load_settings():
 	"""加载设置"""
@@ -228,13 +208,8 @@ func _on_conversion_finished(success: bool):
 func _add_log(message: String):
 	"""添加日志"""
 	var timestamp = Time.get_datetime_string_from_system()
-	var log_line = "[%s] %s\n" % [timestamp, message]
-	log_output.text += log_line
-	log_output.scroll_vertical = log_output.get_v_scroll_bar().max_value
-
-func _on_clear_log():
-	"""清除日志"""
-	log_output.text = ""
+	var log_line = "[%s] %s" % [timestamp, message]
+	print(log_line)
 
 func _on_browse_python_path():
 	"""浏览Python路径"""
@@ -284,4 +259,3 @@ func _on_output_path_selected(path: String):
 func _on_settings_pressed():
 	"""设置按钮点击事件"""
 	_save_settings()
-	_add_log("设置已保存")
